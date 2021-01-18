@@ -5,10 +5,14 @@ var cors = require("cors");
 var morgan = require("morgan");
 var path = require("path")
 var jwt = require('jsonwebtoken')
-var { userModel } = require('./dbconn/modules');
+var { userModel,tweetModel } = require('./dbconn/modules');
 var app = express();
 var authRoutes = require('./routes/auth')
 var SERVER_SECRET = process.env.SECRET || "1234";
+let socketIo = require("socket.io");
+var http = require("http");
+var server = http.createServer(app);
+var io = socketIo(server);
 
 
 app.use(bodyParser.json());
@@ -77,6 +81,50 @@ app.get("/profile", (req, res, next) => {
         })
 })
 
+app.post('/tweet', (req, res, next) => {
+    if (!req.body.userName && !req.body.tweet) {
+        res.status(403).send({
+            message: "please provide email or tweet"
+        })
+    }
+    console.log(req.body.userName)
+    // userTweets.push(req.body.tweet)
+    // userNames.push(req.body.userName)
+    var newTweet = new tweetModel({
+        "name": req.body.userName,
+        "tweets": req.body.tweet
+    })
+    newTweet.save((err, data) => {
+        if (!err) {
+            res.send({
+                status: 200,
+                message: "Post created",
+                data: data
+            })
+            console.log(data.tweets)
+            io.emit("NEW_POST", data)
+        } else {
+            console.log(err);
+            res.status(500).send({
+                message: "user create error, " + err
+            })
+        }
+    });
+})
+
+app.get('/getTweets', (req, res, next) => {
+
+    tweetModel.find({}, (err, data) => {
+        if (err) {
+            console.log(err)
+        }
+        else {
+            console.log(data)
+            // data = data[data.length -1]
+            res.send(data)
+        }
+    })
+})
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log("server is running on: ", PORT);

@@ -7,10 +7,7 @@ var SERVER_SECRET = process.env.SECRET || "1234";
 var postmark = require("postmark");
 var emailApi = process.env.EMAIL_API || "c1085f89-3538-4e2d-8751-faf7125765e6"; 
 var client = new postmark.ServerClient(emailApi);
-// let socketIo = require("socket.io");
-// var http = require("http");
-// var server = http.createServer(router);
-// var io = socketIo(server);
+
 router.post("/signup", (req, res, next) => {
 
     if (!req.body.name ||
@@ -244,65 +241,7 @@ router.post('/forget-password-2', (req, res, next) => {
 })
 // var userTweets = [];
 // var userNames = [];
-router.post('/tweet', (req, res, next) => {
-    if (!req.body.userName && !req.body.tweet) {
-        res.status(403).send({
-            message: "please provide email or tweet"
-        })
-    }
-    console.log(req.body.userName)
-    // userTweets.push(req.body.tweet)
-    // userNames.push(req.body.userName)
-    var newTweet = new tweetModel({
-        "name": req.body.userName,
-        "tweets": req.body.tweet
-    })
-    newTweet.save((err, data) => {
-        if (!err) {
-            res.send({
-                status: 200,
-                message: "Post created",
-                data: data
-            })
-            console.log(data.tweets)
-            // io.emit("NEW_POST", data)
-        } else {
-            console.log(err);
-            res.status(500).send({
-                message: "user create error, " + err
-            })
-        }
-    });
-})
 
-router.get('/getTweets', (req, res, next) => {
-
-    tweetModel.find({}, (err, data) => {
-        if (err) {
-            console.log(err)
-        }
-        else {
-            console.log(data)
-            // data = data[data.length -1]
-            res.send(data)
-        }
-    })
-})
-
-router.get('/getUsers', (req, res, next) => {
-
-    userModel.find({},{ name: 1, email: 1, phone: 1 }, (err, data) => {
-        if (err) {
-            console.log(err)
-            res.send(err)
-        }
-        else {
-            console.log(data)
-            // data = data[data.length -1]
-            res.send(data)
-        }
-    })
-})
 function generetOtp(min, max) {
     return Math.random() * (max - min) + min;
 }

@@ -1,5 +1,5 @@
-//var url = "http://localhost:5000"
-var url = "https://twitter-jahan.herokuapp.com"
+var url = "http://localhost:5000"
+// var url = "https://twitter-jahan.herokuapp.com"
 //user signup request using axios
 function signup() {
     axios({
@@ -149,21 +149,21 @@ function getUsers() {
     return false
 }
 // var url = 'http://localhost:5000';
-// var socket = io(url);
-// socket.on('NEW_POST', (newPost) => {
-//     console.log(newPost)
-//     let tweets = newPost.data;
-//     let html = ""
-//     tweets.forEach(element => {
-//         html += `
-//             <div class="posts">
-//             <h4>${element.name}</h4>
-//             <p>${element.tweets}</p>
-//             </div>
-//             `
-//     });
-//     document.getElementById('posts').innerHTML = html
-// })
+var socket = io(url);
+socket.on('NEW_POST', (newPost) => {
+    console.log(newPost)
+    let tweets = newPost.data;
+    let html = ""
+    tweets.forEach(element => {
+        html += `
+            <div class="posts">
+            <h4>${element.name}</h4>
+            <p>${element.tweets}</p>
+            </div>
+            `
+    });
+    document.getElementById('posts').innerHTML = html
+})
 
 //forget password request step1 using axios
 function forgetPassword() {
