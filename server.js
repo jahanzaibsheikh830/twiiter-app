@@ -15,7 +15,7 @@ var server = http.createServer(app);
 var io = socketIO(server);
 
 io.on("connection",()=>{
-    console.log("chal gya madarchod");
+    console.log("chl gya");
 })
 
 app.use(bodyParser.json());
