@@ -1,10 +1,16 @@
-var url = "http://localhost:5000"
-// var url = "https://twitter-jahan.herokuapp.com"
+// var url = "http://localhost:5000"
+var url = "https://twitter-jahan.herokuapp.com"
 //user signup request using axios
+
+var socket = io(url);
+socket.on('connect', function () {
+    console.log("connected")
+});
+
 function signup() {
     axios({
         method: 'post',
-        url: url+'/signup',
+        url: url + '/signup',
         data: {
             name: document.getElementById('name').value,
             email: document.getElementById('email').value,
@@ -30,7 +36,7 @@ function signup() {
 function login() {
     axios({
         method: 'post',
-        url: url+'/login',
+        url: url + '/login',
         data: {
             email: document.getElementById('lemail').value,
             password: document.getElementById('lpassword').value,
@@ -54,7 +60,7 @@ function login() {
 function getProfile() {
     axios({
         method: 'get',
-        url: url+'/profile',
+        url: url + '/profile',
         credentials: 'include',
     }).then((response) => {
         document.getElementById('pName').innerHTML = response.data.profile.name
@@ -68,14 +74,21 @@ function getProfile() {
 function post() {
     axios({
         method: 'post',
-        url: url+'/tweet',
+        url: url + '/tweet',
         credentials: 'include',
         data: {
             userName: document.getElementById('pName').innerHTML,
             tweet: document.getElementById('tweet').value,
         },
     }).then((response) => {
-        console.log(response.data.data.message);
+        console.log(response.data.data);
+        document.getElementById('userPosts').innerHTML += `
+    <div class="posts">
+    <h4>${response.data.data.name}</h4>
+    <p class="text-primary">${new Date(response.data.data.createdOn).toLocaleTimeString()}</p>
+    <p>${response.data.data.tweets}</p>
+    </div>
+    `
     }, (error) => {
         console.log(error.message);
     });
@@ -87,7 +100,7 @@ function post() {
 function getTweets() {
     axios({
         method: 'get',
-        url: url+'/getTweets',
+        url: url + '/getTweets',
         credentials: 'include',
     }).then((response) => {
         let tweets = response.data;
@@ -127,7 +140,7 @@ function getTweets() {
 function getUsers() {
     axios({
         method: 'get',
-        url: url+'/getUsers',
+        url: url + '/getUsers',
         credentials: 'include',
     }).then((response) => {
         let users = response.data;
@@ -148,21 +161,19 @@ function getUsers() {
     });
     return false
 }
-// var url = 'http://localhost:5000';
-var socket = io(url);
+
+
 socket.on('NEW_POST', (newPost) => {
     console.log(newPost)
-    let tweets = newPost.data;
-    let html = ""
-    tweets.forEach(element => {
-        html += `
-            <div class="posts">
-            <h4>${element.name}</h4>
-            <p>${element.tweets}</p>
-            </div>
-            `
-    });
-    document.getElementById('posts').innerHTML = html
+    let tweets = newPost;
+    document.getElementById('posts').innerHTML += `
+    <div class="posts">
+    <h4>${tweets.name}</h4>
+    <p class="text-primary">${new Date(tweets.createdOn).toLocaleTimeString()}</p>
+    <p>${tweets.tweets}</p>
+    </div>
+    `
+
 })
 
 //forget password request step1 using axios
@@ -171,7 +182,7 @@ function forgetPassword() {
     localStorage.setItem('email', email)
     axios({
         method: 'post',
-        url: url+'/forget-password',
+        url: url + '/forget-password',
         data: {
             email: email,
         },
@@ -195,7 +206,7 @@ function forgetPassword2() {
     let getEmail = localStorage.getItem('email')
     axios({
         method: 'post',
-        url: url+'/forget-password-2',
+        url: url + '/forget-password-2',
         data: {
             email: getEmail,
             newPassword: document.getElementById('newPassword').value,
@@ -220,7 +231,7 @@ function forgetPassword2() {
 function logout() {
     axios({
         method: 'post',
-        url: url+'/logout',
+        url: url + '/logout',
     }).then((response) => {
         location.href = "./login.html"
     }, (error) => {

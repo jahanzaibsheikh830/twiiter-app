@@ -9,11 +9,14 @@ var { userModel,tweetModel } = require('./dbconn/modules');
 var app = express();
 var authRoutes = require('./routes/auth')
 var SERVER_SECRET = process.env.SECRET || "1234";
-let socketIo = require("socket.io");
 var http = require("http");
+var socketIO = require("socket.io");
 var server = http.createServer(app);
-var io = socketIo(server);
+var io = socketIO(server);
 
+io.on("connection",()=>{
+    console.log("chal gya madarchod");
+})
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -28,7 +31,6 @@ app.use("/", express.static(path.resolve(path.join(__dirname, "public"))))
 
 app.use('/', authRoutes);
 app.use(function(req, res, next) {
-    console.log("req.cookies: ", req.cookies);
     if (!req.cookies.jToken) {
         res.status(401).send("include http-only credentials with every request")
         return;
@@ -126,6 +128,6 @@ app.get('/getTweets', (req, res, next) => {
     })
 })
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log("server is running on: ", PORT);
 })

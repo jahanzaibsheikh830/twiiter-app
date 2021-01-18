@@ -1,11 +1,11 @@
 var express = require('express')
 var bcrypt = require("bcrypt-inzi")
 var jwt = require('jsonwebtoken');
-var { userModel, otpModel, tweetModel, userTweetModel } = require('../dbconn/modules')
+var { userModel, otpModel,} = require('../dbconn/modules')
 var router = express.Router();
 var SERVER_SECRET = process.env.SECRET || "1234";
 var postmark = require("postmark");
-var emailApi = process.env.EMAIL_API || "c1085f89-3538-4e2d-8751-faf7125765e6"; 
+var emailApi = process.env.EMAIL_API; 
 var client = new postmark.ServerClient(emailApi);
 
 router.post("/signup", (req, res, next) => {
